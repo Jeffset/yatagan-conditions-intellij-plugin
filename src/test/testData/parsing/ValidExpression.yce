@@ -1,0 +1,3 @@
+(@MyFeature & !@OtherFeature) | Foo::one.two.three
+  & ! (!(!!foo.bar.baz))
+  | !(F::a & !G::b)

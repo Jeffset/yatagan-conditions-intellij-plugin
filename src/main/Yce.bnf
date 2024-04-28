@@ -1,0 +1,92 @@
+/*
+ * Copyright 2024 Fedor Ihnatkevich
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+{
+  generate = [
+    java = "17"
+    visitor = "yes"
+    visitor-value = "R"
+  ]
+  parserClass = "io.github.jeffset.yatagan.intellij.YceParser"
+
+  extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix = "Yce"
+  psiImplClassSuffix = "Impl"
+  psiPackage = "io.github.jeffset.yatagan.intellij.conditions.psi"
+  psiImplPackage = "io.github.jeffset.yatagan.intellij.conditions.psi.impl"
+
+  tokenTypeClass = "io.github.jeffset.yatagan.intellij.conditions.psi.YceTokenType"
+  elementTypeClass = "io.github.jeffset.yatagan.intellij.conditions.psi.YceElementType"
+  elementTypeHolderClass = "io.github.jeffset.yatagan.intellij.psi.YceTypes"
+
+  extends(".*Expression") = Expression
+  extends(".*Variable") = Variable
+
+  tokens = [
+    IDENTIFIER = "regexp:[a-zA-Z_][a-zA-Z0-9_]*"
+    ACCESS = "::"
+    DOT = "."
+    AT = "@"
+    NOT_OP = "!"
+    AND_OP = "&"
+    OR_OP = "|"
+    L_PAREN = "("
+    R_PAREN = ")"
+  ]
+}
+
+File ::= Expression
+
+Expression ::= AndExpression | OrExpression | NotExpression | VariableExpression | ParenExpression
+AndExpression ::= Expression AND_OP Expression {
+    methods = [
+        lhs = "Expression[0]"
+        rhs = "Expression[1]"
+    ]
+}
+OrExpression ::= Expression OR_OP Expression {
+    methods = [
+        lhs = "Expression[0]"
+        rhs = "Expression[1]"
+    ]
+}
+NotExpression ::= NOT_OP Expression
+ParenExpression ::= L_PAREN Expression R_PAREN
+VariableExpression ::= Variable
+
+Variable ::= ConditionVariable | FeatureReferenceVariable
+
+ConditionVariable ::= [ConditionQualifier ACCESS] ConditionPath {
+    mixin = "io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionVariableMixin"
+    methods = [
+        members = "ConditionMember"
+    ]
+}
+ConditionQualifier ::= IDENTIFIER {
+    mixin = "io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionQualifierMixin"
+}
+private ConditionPath ::= ConditionMember (DOT ConditionMember)*
+ConditionMember ::= IDENTIFIER {
+    mixin = "io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionMemberMixin"
+}
+
+FeatureReferenceVariable ::= AT IDENTIFIER {
+    mixin = "io.github.jeffset.yatagan.intellij.conditions.psi.YceFeatureReferenceVariableMixin"
+    methods = [
+        identifier = "IDENTIFIER"
+    ]
+}

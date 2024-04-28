@@ -1,0 +1,52 @@
+<idea-plugin require-restart="false">
+    <vendor email="m.jeffset@gmail.com" url="https://jeffset.github.io">Fedor Ihnatkevich</vendor>
+    <name>Yatagan Conditions</name>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.java</depends>
+    <depends>org.intellij.intelliLang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="@ConditionExpression"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.YceFileType"
+                fieldName="INSTANCE"
+                language="YataganConditionExpression"
+        />
+        <lang.parserDefinition
+                language="YataganConditionExpression"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.YceParserDefinition"
+        />
+
+        <colorSettingsPage
+                implementation="io.github.jeffset.yatagan.intellij.conditions.YceColorSettingsPage"
+        />
+
+        <lang.elementManipulator
+                forClass="io.github.jeffset.yatagan.intellij.conditions.psi.impl.YceConditionQualifierImpl"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.rename.YceConditionQualifierManipulator"
+        />
+        <lang.elementManipulator
+                forClass="io.github.jeffset.yatagan.intellij.conditions.psi.impl.YceConditionMemberImpl"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.rename.YceConditionMemberManipulator"
+        />
+        <lang.elementManipulator
+                forClass="io.github.jeffset.yatagan.intellij.conditions.psi.impl.YceFeatureReferenceVariableImpl"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.rename.YceFeatureReferenceVariableManipulator"
+        />
+        <lang.syntaxHighlighter
+                language="YataganConditionExpression"
+                implementationClass="io.github.jeffset.yatagan.intellij.conditions.YceSyntaxHighlighter"
+        />
+
+        <highlightVisitor implementation="io.github.jeffset.yatagan.intellij.conditions.YceHighlightVisitor"/>
+
+        <typedHandler implementation="io.github.jeffset.yatagan.intellij.conditions.YceTypedHandler"
+                      id="YataganConditionExpression"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="org.intellij.intelliLang">
+        <injectionConfig config="injectionConfig.xml"/>
+    </extensions>
+</idea-plugin>

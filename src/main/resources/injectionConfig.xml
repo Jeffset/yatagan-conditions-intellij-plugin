@@ -1,0 +1,41 @@
+<LanguageInjectionConfiguration>
+    <!-- Condition Expression -->
+
+    <injection language="YataganConditionExpression" injector-id="java">
+        <display-name>com.yandex.yatagan.ConditionExpression</display-name>
+        <single-file />
+        <place> <![CDATA[
+    psiMethod().withName("value").withParameters().definedInClass("com.yandex.yatagan.ConditionExpression")
+    ]]> </place>
+    </injection>
+
+    <injection language="YataganConditionExpression" injector-id="kotlin">
+        <display-name>com.yandex.yatagan.ConditionExpression</display-name>
+        <single-file />
+        <place> <![CDATA[
+    kotlinParameter()
+      .ofFunction(0, kotlinFunction().withName("ConditionExpression")
+         .definedInClass("com.yandex.yatagan.ConditionExpression"))
+    ]]> </place>
+    </injection>
+
+    <!-- Legacy Condition -->
+
+    <injection language="YataganConditionExpression" injector-id="java">
+        <display-name>com.yandex.yatagan.Condition</display-name>
+        <single-file />
+        <place> <![CDATA[
+    psiMethod().withName("condition").withParameters().definedInClass("com.yandex.yatagan.Condition")
+    ]]> </place>
+    </injection>
+
+    <injection language="YataganConditionExpression" injector-id="kotlin">
+        <display-name>com.yandex.yatagan.Condition</display-name>
+        <single-file />
+        <place> <![CDATA[
+    kotlinParameter()
+      .ofFunction(1, kotlinFunction().withName("Condition")
+         .definedInClass("com.yandex.yatagan.Condition"))
+    ]]> </place>
+    </injection>
+</LanguageInjectionConfiguration>
