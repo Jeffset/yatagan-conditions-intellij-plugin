@@ -8,7 +8,7 @@ An unofficial plugin providing IDE support for [Yatagan](https://github.com/yand
 - Correct usage tracking and rename refactorings with referenced _features_ and _conditions_.
 - Naive autocomplete for _condition_ path members.
 
-### What is not here (yet?)
+### What is not here
 There is no building and validating yatagan graphs functionality
 available.
 Doesn't share code with Yatagan, so highlighting and error reporting is done on the best effort basis.

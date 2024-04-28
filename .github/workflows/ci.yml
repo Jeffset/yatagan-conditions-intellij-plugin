@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Free Disk Space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          docker-images: true
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Checkout IntelliJ Sources
+        uses: actions/checkout@v4
+        with:
+          repository: JetBrains/intellij-community
+          path: ${{ github.workspace }}/intellij-sources
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Build and Test
+        run: ./gradlew check --continue
+        env:
+          INTELLIJ_SOURCES_DIR: ${{ github.workspace }}/intellij-sources
+
+      - name: Verify Compatibility
+        run: ./gradlew runPluginVerifier --continue --stacktrace
+        env:
+          INTELLIJ_SOURCES_DIR: ${{ github.workspace }}/intellij-sources
+
+      - name: Upload build reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-reports
+          path: build/reports

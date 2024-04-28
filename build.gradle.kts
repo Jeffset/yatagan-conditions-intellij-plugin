@@ -10,7 +10,7 @@ plugins {
 }
 
 group = properties("plugin.group")
-version = properties("plugin.version")
+version = properties("plugin.version").get()
 
 repositories {
     mavenCentral()
@@ -107,13 +107,9 @@ tasks {
     }
 
     test {
-        environment("INTELLIJ_SOURCES_DIR").takeIf { it.isPresent }?.let {
-            systemProperty("idea.home.path", it.get())
+        environment("INTELLIJ_SOURCES_DIR").getOrNull()?.let {
+            systemProperty("idea.home.path", it)
         }
-    }
-
-    check {
-        dependsOn(runPluginVerifier)
     }
 
     wrapper {
