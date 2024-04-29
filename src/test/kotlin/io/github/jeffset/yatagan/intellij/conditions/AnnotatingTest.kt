@@ -16,21 +16,26 @@
 
 package io.github.jeffset.yatagan.intellij.conditions
 
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase4
 import org.junit.Test
 
 class AnnotatingTest : LightJavaCodeInsightFixtureTestCase4(
-    LightJavaCodeInsightFixtureTestCase.JAVA_8,
-    "src/test/testData/annotating",
+    projectDescriptor = MyLightTestProjectDescriptor,
+    testDataPath = "src/test/testData/annotating",
 ) {
     @Test
-    fun testPathUnsupportedLegacyCondition() {
+    fun testAnnotatingJava() {
         fixture.configureByFiles(
-            "ForAnnotator.java",
-            "com/yandex/yatagan/Condition.java",
-            "com/yandex/yatagan/ConditionExpression.java",
+            "TestFile.java",
         )
-        fixture.checkHighlighting();
+        fixture.checkHighlighting()
+    }
+
+    @Test
+    fun testAnnotatingKotlin() {
+        fixture.configureByFiles(
+            "TestFile.kt",
+        )
+        fixture.checkHighlighting()
     }
 }

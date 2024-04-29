@@ -28,5 +28,6 @@ class YceFeatureReferenceVariableManipulator : AbstractElementManipulator<YceFea
         newContent: String
     ): YceFeatureReferenceVariable {
         return YcePsiElementFactory.getInstance(element.project).createFeatureReferenceVariable(newContent)
+            .also { element.replace(it) }
     }
 }

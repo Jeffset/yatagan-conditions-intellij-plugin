@@ -13,6 +13,8 @@ jobs:
       contents: read
 
     steps:
+      # Required because plugin verifier downloads multiple real IDE distributions
+      # to check compatibility against, and that takes a lot of space
       - name: Free Disk Space
         uses: jlumbroso/free-disk-space@main
         with:
@@ -31,11 +33,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      # Currently required only for mockJDK for tests.
       - name: Checkout IntelliJ Sources
         uses: actions/checkout@v4
         with:
           repository: JetBrains/intellij-community
           path: ${{ github.workspace }}/intellij-sources
+          show-progress: false
+          ref: 'idea/223.8836.41'
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3

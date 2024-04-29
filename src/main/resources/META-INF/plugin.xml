@@ -1,5 +1,5 @@
 <idea-plugin require-restart="false">
-    <vendor email="m.jeffset@gmail.com" url="https://jeffset.github.io">Fedor Ihnatkevich</vendor>
+    <vendor email="m.jeffset@gmail.com" url="https://github.com/Jeffset">Jeffset</vendor>
     <name>Yatagan Conditions</name>
 
     <depends>com.intellij.modules.platform</depends>

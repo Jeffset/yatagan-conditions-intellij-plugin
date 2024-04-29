@@ -7,3 +7,5 @@ build/
 *.iws
 *.iml
 *.ipr
+
+local.properties

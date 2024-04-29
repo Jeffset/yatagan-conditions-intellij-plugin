@@ -25,8 +25,9 @@ class YceConditionMemberManipulator : AbstractElementManipulator<YceConditionMem
     override fun handleContentChange(
         element: YceConditionMember,
         range: TextRange,
-        newContent: String
+        newContent: String,
     ): YceConditionMember {
         return YcePsiElementFactory.getInstance(element.project).createConditionMember(newContent)
+            .also { element.replace(it) }
     }
 }

@@ -1,5 +1,6 @@
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import java.util.Properties
 
 plugins {
     java
@@ -36,6 +37,9 @@ intellij {
     plugins = listOf(
         "org.intellij.intelliLang",
         "com.intellij.java",
+
+        // Just for testing, no real dependency
+        "org.jetbrains.kotlin",
     )
 
     instrumentCode = false
@@ -47,6 +51,9 @@ val generatedPsiDir = layout.buildDirectory.dir("generated-java")
 sourceSets.main {
     java.srcDirs(generatedPsiDir)
 }
+
+val localProperties: Provider<Properties> = providers.fileContents(layout.projectDirectory.file("local.properties"))
+    .asText.map { text -> text.reader().use { Properties().apply { load(it) } } }
 
 tasks {
     patchPluginXml {
@@ -107,8 +114,16 @@ tasks {
     }
 
     test {
-        environment("INTELLIJ_SOURCES_DIR").getOrNull()?.let {
+        val intellijDir = environment("INTELLIJ_SOURCES_DIR").getOrNull() ?: localProperties("intellij.dir").getOrNull()
+        intellijDir?.let {
             systemProperty("idea.home.path", it)
+        }
+
+        doFirst {
+            if (intellijDir == null || !File(intellijDir).isDirectory) {
+                throw GradleException(
+                    "'idea.home.path' is not set to a valid path: $intellijDir, tests will not work properly")
+            }
         }
     }
 
@@ -117,5 +132,6 @@ tasks {
     }
 }
 
+fun localProperties(key: String): Provider<String> = localProperties.map { it[key]?.toString() }
 fun properties(key: String): Provider<String> = providers.gradleProperty(key)
 fun environment(key: String): Provider<String> = providers.environmentVariable(key)

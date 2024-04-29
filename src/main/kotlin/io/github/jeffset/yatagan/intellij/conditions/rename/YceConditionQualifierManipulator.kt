@@ -28,5 +28,6 @@ class YceConditionQualifierManipulator : AbstractElementManipulator<YceCondition
         newContent: String
     ): YceConditionQualifier {
         return YcePsiElementFactory.getInstance(element.project).createConditionQualifier(newContent)
+            .also { element.replace(it) }
     }
 }
