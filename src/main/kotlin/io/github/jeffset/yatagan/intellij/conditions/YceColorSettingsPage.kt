@@ -43,7 +43,7 @@ class YceColorSettingsPage : ColorSettingsPage {
                 YceTextAttributeKeys.ConditionQualifier
             ),
             AttributesDescriptor("Condition path member",
-                YceTextAttributeKeys.PathMember
+                YceTextAttributeKeys.PathMemberMethod
             ),
             AttributesDescriptor("Feature reference",
                 YceTextAttributeKeys.FeatureReference
@@ -76,16 +76,17 @@ class YceColorSettingsPage : ColorSettingsPage {
 
     override fun getDemoText(): String {
         return """
-            |(<cp>Features</cp>::<m>MY_FEATURE</m>.<m>isEnabled</m> | !<cp>Helper</cp>::<m>isDebug</m>) & 
-            |    !<f>@IsDebug</f> & <u>UnknownType</u>::<u>foo</u>
+            |(<cp>Features</cp>::<f>MY_FEATURE</f>.<m>isEnabled</m> | !<cp>Helper</cp>::<m>isDebug</m>) & 
+            |    !<r>@IsDebug</r> & <u>UnknownType</u>::<u>foo</u>
         """.trimMargin()
     }
 
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey> {
         return mapOf(
             "cp" to YceTextAttributeKeys.ConditionQualifier,
-            "f" to YceTextAttributeKeys.FeatureReference,
-            "m" to YceTextAttributeKeys.PathMember,
+            "r" to YceTextAttributeKeys.FeatureReference,
+            "m" to YceTextAttributeKeys.PathMemberMethod,
+            "f" to YceTextAttributeKeys.PathMemberField,
             "u" to YceTextAttributeKeys.Unresolved,
         )
     }

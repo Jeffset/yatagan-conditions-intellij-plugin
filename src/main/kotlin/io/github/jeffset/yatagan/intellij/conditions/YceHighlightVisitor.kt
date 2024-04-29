@@ -23,6 +23,7 @@ import com.intellij.codeInsight.daemon.impl.analysis.HighlightInfoHolder
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiMethod
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionQualifier
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionVariable
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceExpression
@@ -117,7 +118,11 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
     override fun visitConditionVariable(element: YceConditionVariable) {
         for ((member, _, resolvedMember) in element.resolve().path) {
             if (resolvedMember != null) {
-                HighlightInfo.newHighlightInfo(MEMBER_QUALIFIER)
+                if (resolvedMember is PsiMethod) {
+                    HighlightInfo.newHighlightInfo(METHOD_MEMBER)
+                } else {
+                    HighlightInfo.newHighlightInfo(FIELD_MEMBER)
+                }
             } else {
                 HighlightInfo.newHighlightInfo(UNRESOLVED)
                     .descriptionAndTooltip("Unresolved method/field: ${member.text}")
@@ -148,7 +153,11 @@ private val FEATURE_REFERENCE = HighlightInfoType.HighlightInfoTypeImpl(
     YceTextAttributeKeys.FeatureReference,
 )
 
-private val MEMBER_QUALIFIER = HighlightInfoType.HighlightInfoTypeImpl(
+private val METHOD_MEMBER = HighlightInfoType.HighlightInfoTypeImpl(
     HighlightInfoType.SYMBOL_TYPE_SEVERITY,
-    YceTextAttributeKeys.PathMember,
+    YceTextAttributeKeys.PathMemberMethod,
+)
+private val FIELD_MEMBER = HighlightInfoType.HighlightInfoTypeImpl(
+    HighlightInfoType.SYMBOL_TYPE_SEVERITY,
+    YceTextAttributeKeys.PathMemberField,
 )

@@ -46,8 +46,11 @@ internal object YceTextAttributeKeys {
     val FeatureReference = createTextAttributesKey("YCE_FEATURE_REFERENCE",
         DefaultLanguageHighlighterColors.METADATA)
 
-    val PathMember = createTextAttributesKey("YCE_PATH_MEMBER",
+    val PathMemberMethod = createTextAttributesKey("YCE_PATH_MEMBER_METHOD",
         DefaultLanguageHighlighterColors.FUNCTION_CALL)
+
+    val PathMemberField = createTextAttributesKey("YCE_PATH_MEMBER_FIELD",
+        DefaultLanguageHighlighterColors.STATIC_FIELD)
 
     val Unresolved = createTextAttributesKey("YCE_UNRESOLVED",
         CodeInsightColors.WRONG_REFERENCES_ATTRIBUTES)
