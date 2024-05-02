@@ -24,7 +24,9 @@ import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionMember
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionQualifier
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceFeatureReferenceVariable
 import io.github.jeffset.yatagan.intellij.conditions.psi.findChildOfType
+import org.jetbrains.annotations.NonNls
 
+@NonNls
 @Service(Service.Level.PROJECT)
 class YcePsiElementFactory(
     private val project: Project,

@@ -21,39 +21,49 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighter
 import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
+import org.jetbrains.annotations.NonNls
 import javax.swing.Icon
 
 class YceColorSettingsPage : ColorSettingsPage {
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> {
         return arrayOf(
-            AttributesDescriptor("Logical operators",
-                YceTextAttributeKeys.Operator
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.operators"),
+                YceTextAttributeKeys.Operator,
             ),
-            AttributesDescriptor("Access operator",
-                YceTextAttributeKeys.AccessOperator
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.access"),
+                YceTextAttributeKeys.AccessOperator,
             ),
-            AttributesDescriptor("Dot",
-                YceTextAttributeKeys.Dot
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.dot"),
+                YceTextAttributeKeys.Dot,
             ),
-            AttributesDescriptor("Parenthesis",
-                YceTextAttributeKeys.Parentheses
-            ),
-
-            AttributesDescriptor("Condition provider",
-                YceTextAttributeKeys.ConditionQualifier
-            ),
-            AttributesDescriptor("Condition path member",
-                YceTextAttributeKeys.PathMemberMethod
-            ),
-            AttributesDescriptor("Feature reference",
-                YceTextAttributeKeys.FeatureReference
-            ),
-            AttributesDescriptor("Unresolved",
-                YceTextAttributeKeys.Unresolved
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.parentheses"),
+                YceTextAttributeKeys.Parentheses,
             ),
 
-            AttributesDescriptor("Bad character",
-                YceTextAttributeKeys.BadCharacter
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.qualifier"),
+                YceTextAttributeKeys.ConditionQualifier,
+            ),
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.member"),
+                YceTextAttributeKeys.PathMemberMethod,
+            ),
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.reference"),
+                YceTextAttributeKeys.FeatureReference,
+            ),
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.unresolved"),
+                YceTextAttributeKeys.Unresolved,
+            ),
+
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.bad"),
+                YceTextAttributeKeys.BadCharacter,
             ),
         )
     }
@@ -63,7 +73,7 @@ class YceColorSettingsPage : ColorSettingsPage {
     }
 
     override fun getDisplayName(): String {
-        return "Yatagan Conditions"
+        return YceBundle.message("settings.yatagan.conditions.name")
     }
 
     override fun getIcon(): Icon? {
@@ -81,6 +91,7 @@ class YceColorSettingsPage : ColorSettingsPage {
         """.trimMargin()
     }
 
+    @NonNls
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey> {
         return mapOf(
             "cp" to YceTextAttributeKeys.ConditionQualifier,

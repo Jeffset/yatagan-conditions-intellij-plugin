@@ -54,11 +54,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
             // If the context can't be resolved, then no need to even try highlighting
             val context = (file as YceFile).context ?: run {
                 HighlightInfo.newHighlightInfo(HighlightInfoType.WARNING)
-                    .descriptionAndTooltip(
-                        "Unable to find an enclosing Yatagan annotation (@Condition/@ConditionExpression). " +
-                                "This language is only supported while injected into such an annotation, " +
-                                "no semantic highlighting is currently possible."
-                    )
+                    .descriptionAndTooltip(YceBundle.message("warning.yatagan.conditions.invalid.context"))
                     .range(file)
                     .create()
                     .let(holder::add)
@@ -68,7 +64,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
 
             if (context.isLegacy && !validateForLegacyCondition(file.firstChild)) {
                 HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR)
-                    .descriptionAndTooltip("Legacy @Condition only supports a single unqualified boolean variable.")
+                    .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.invalid.legacy"))
                     .range(file)
                     .create()
                     .let(holder()::add)
@@ -102,7 +98,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
     override fun visitConditionQualifier(element: YceConditionQualifier) {
         when (element.reference?.resolve()) {
             null -> HighlightInfo.newHighlightInfo(UNRESOLVED)
-                .descriptionAndTooltip("Unresolved qualifier: ${element.text}")
+                .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.qualifier", element.text))
             else -> HighlightInfo.newHighlightInfo(CONDITION_QUALIFIER)
         }.range(element).create().let(holder()::add)
     }
@@ -110,7 +106,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
     override fun visitFeatureReferenceVariable(element: YceFeatureReferenceVariable) {
         when (element.reference?.resolve()) {
             null -> HighlightInfo.newHighlightInfo(UNRESOLVED)
-                .descriptionAndTooltip("Unresolved feature reference: ${element.text}")
+                .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.reference", element.text))
             else -> HighlightInfo.newHighlightInfo(FEATURE_REFERENCE)
         }.range(element).create().let(holder()::add)
     }
@@ -125,7 +121,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
                 }
             } else {
                 HighlightInfo.newHighlightInfo(UNRESOLVED)
-                    .descriptionAndTooltip("Unresolved method/field: ${member.text}")
+                    .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.member", member.text))
             }.range(member).create().let(holder()::add)
         }
     }

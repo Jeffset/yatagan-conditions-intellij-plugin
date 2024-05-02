@@ -21,11 +21,11 @@ import javax.swing.Icon
 
 object YceFileType : LanguageFileType(YceLanguage) {
     override fun getName(): String {
-        return "@ConditionExpression"
+        return "Yatagan Condition"
     }
 
     override fun getDescription(): String {
-        return "Yatagan @ConditionExpression expression syntax"
+        return YceBundle.message("label.yatagan.conditions.file")
     }
 
     override fun getDefaultExtension(): String {

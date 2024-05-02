@@ -10,9 +10,9 @@ annotation class UnsupportedLegacyCondition
 
 @AnyConditions(
     AnyCondition(
-        Condition(Hello::class, "!<error descr="Unresolved method/field: what">what</error>"),
-        Condition(Hello::class, "<error descr="Legacy @Condition only supports a single unqualified boolean variable.">@Foo</error>"),
-    ),
+        Condition(Hello::class, "!<error descr="Unresolved method/field: `what`.">what</error>"),
+    Condition(Hello::class, "<error descr="Legacy @Condition only supports a single unqualified boolean variable.">@Foo</error>"),
+),
 )
 annotation class InvalidNestedLegacyConditions
 
@@ -25,9 +25,9 @@ annotation class InvalidNestedLegacyConditions
 annotation class ValidNestedLegacyConditions
 
 @ConditionExpression(
-    "<error descr="Unresolved feature reference: @Feature">@Feature</error> & " +
-            "<error descr="Unresolved qualifier: Goo">Goo</error>::<error descr="Unresolved method/field: isEnabled">isEnabled</error> | " +
-            "Hello::sIsEnabled.<error descr="Unresolved method/field: nothing">nothing</error>", Hello::class,
+    "<error descr="Unresolved feature reference: `@Feature`.">@Feature</error> & " +
+            "<error descr="Unresolved qualifier: `Goo`.">Goo</error>::<error descr="Unresolved method/field: `isEnabled`.">isEnabled</error> | " +
+"Hello::sIsEnabled.<error descr="Unresolved method/field: `nothing`.">nothing</error>", Hello::class,
 )
 annotation class WithUnresolvedThings
 

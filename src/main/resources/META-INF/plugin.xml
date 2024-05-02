@@ -1,4 +1,4 @@
-<idea-plugin require-restart="false">
+<idea-plugin require-restart="false" url="https://github.com/Jeffset/yatagan-conditions-intellij-plugin">
     <vendor email="m.jeffset@gmail.com" url="https://github.com/Jeffset">Jeffset</vendor>
     <name>Yatagan Conditions</name>
 
@@ -9,7 +9,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-                name="@ConditionExpression"
+                name="Yatagan Condition"
                 implementationClass="io.github.jeffset.yatagan.intellij.conditions.YceFileType"
                 fieldName="INSTANCE"
                 language="YataganConditionExpression"

@@ -18,10 +18,12 @@ package io.github.jeffset.yatagan.intellij.conditions.psi
 
 import com.intellij.psi.tree.IElementType
 import io.github.jeffset.yatagan.intellij.conditions.YceLanguage
+import org.jetbrains.annotations.NonNls
 
 class YceTokenType(
     debugName: String,
 ) : IElementType(debugName, YceLanguage) {
+    @NonNls
     override fun toString(): String {
         return "YceTokenType: ${super.toString()}"
     }

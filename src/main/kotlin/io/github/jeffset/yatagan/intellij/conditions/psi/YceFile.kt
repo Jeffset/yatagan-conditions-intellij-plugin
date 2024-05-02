@@ -28,6 +28,7 @@ import com.intellij.psi.util.PsiModificationTracker
 import io.github.jeffset.yatagan.intellij.conditions.YceContext
 import io.github.jeffset.yatagan.intellij.conditions.YceFileType
 import io.github.jeffset.yatagan.intellij.conditions.YceLanguage
+import org.jetbrains.annotations.NonNls
 import org.jetbrains.uast.UAnnotation
 import org.jetbrains.uast.UCallExpression
 import org.jetbrains.uast.UClassLiteralExpression
@@ -37,14 +38,18 @@ import org.jetbrains.uast.getQualifiedName
 import org.jetbrains.uast.toUElement
 import org.jetbrains.uast.visitor.AbstractUastVisitor
 
-private const val CONDITION_EXPRESSION_FQN = "com.yandex.yatagan.ConditionExpression"
-private const val LEGACY_CONDITION_FQN = "com.yandex.yatagan.Condition"
-private const val IMPORTS_AS_FQN = "com.yandex.yatagan.ConditionExpression.ImportAs"
+@NonNls private const val CONDITION_EXPRESSION_FQN = "com.yandex.yatagan.ConditionExpression"
+@NonNls private const val LEGACY_CONDITION_FQN = "com.yandex.yatagan.Condition"
+@NonNls private const val IMPORTS_AS_FQN = "com.yandex.yatagan.ConditionExpression.ImportAs"
 
 private val CONDITION_FQNS = arrayOf(
     CONDITION_EXPRESSION_FQN,
     LEGACY_CONDITION_FQN,
 )
+
+@NonNls private const val IMPORTS_ATTRIBUTE_NAME = "imports"
+@NonNls private const val IMPORT_AS_ATTRIBUTE_NAME = "importAs"
+@NonNls private const val VALUE_ATTRIBUTE_NAME = "value"
 
 class YceFile(
     viewProvider: FileViewProvider,
@@ -83,7 +88,7 @@ class YceFile(
             CONDITION_EXPRESSION_FQN -> {
                 val imports = mutableListOf<PsiType>()
 
-                val importsValue = annotation.attributeValues.find { it.name == "imports" }
+                val importsValue = annotation.attributeValues.find { it.name == IMPORTS_ATTRIBUTE_NAME }
                 importsValue?.expression?.accept(object : AbstractUastVisitor() {
                     override fun visitClassLiteralExpression(node: UClassLiteralExpression): Boolean {
                         node.type?.let(imports::add)
@@ -92,7 +97,7 @@ class YceFile(
                 })
 
                 val namedImports = mutableListOf<Pair<PsiType, String>>()
-                val importsAsValue = annotation.attributeValues.find { it.name == "importAs" }
+                val importsAsValue = annotation.attributeValues.find { it.name == IMPORT_AS_ATTRIBUTE_NAME }
                 importsAsValue?.expression?.accept(object : AbstractUastVisitor() {
                     override fun visitCallExpression(node: UCallExpression): Boolean {
                         if (node.valueArgumentCount != 2 ||
@@ -132,7 +137,7 @@ class YceFile(
 
             LEGACY_CONDITION_FQN -> {
                 var importedType: PsiType? = null
-                annotation.attributeValues.find { it.name == "value" }?.expression?.accept(
+                annotation.attributeValues.find { it.name == VALUE_ATTRIBUTE_NAME }?.expression?.accept(
                     object : AbstractUastVisitor() {
                         override fun visitClassLiteralExpression(node: UClassLiteralExpression): Boolean {
                             importedType = node.type

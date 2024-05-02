@@ -8,7 +8,7 @@ import com.yandex.yatagan.ConditionExpression;
 
 @AnyConditions(
         @AnyCondition({
-                @Condition(value = Hello.class, condition = "!<error descr="Unresolved method/field: what">what</error>"),
+                @Condition(value = Hello.class, condition = "!<error descr="Unresolved method/field: `what`.">what</error>"),
                 @Condition(value = Hello.class, condition = "<error descr="Legacy @Condition only supports a single unqualified boolean variable.">@Foo</error>"),
         })
 )
@@ -22,9 +22,9 @@ import com.yandex.yatagan.ConditionExpression;
 )
 @interface ValidNestedLegacyConditions {}
 
-@ConditionExpression(value = "<error descr="Unresolved feature reference: @Feature">@Feature</error> & " +
-        "<error descr="Unresolved qualifier: Goo">Goo</error>::<error descr="Unresolved method/field: isEnabled">isEnabled</error> | " +
-        "Hello::sIsEnabled.<error descr="Unresolved method/field: nothing">nothing</error>",
+@ConditionExpression(value = "<error descr="Unresolved feature reference: `@Feature`.">@Feature</error> & " +
+        "<error descr="Unresolved qualifier: `Goo`.">Goo</error>::<error descr="Unresolved method/field: `isEnabled`.">isEnabled</error> | " +
+        "Hello::sIsEnabled.<error descr="Unresolved method/field: `nothing`.">nothing</error>",
         imports = {Hello.class})
 @interface WithUnresolvedThings {}
 
