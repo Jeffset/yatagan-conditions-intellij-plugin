@@ -49,7 +49,11 @@ class YceColorSettingsPage : ColorSettingsPage {
                 YceTextAttributeKeys.ConditionQualifier,
             ),
             AttributesDescriptor(
-                YceBundle.message("settings.yatagan.conditions.color.member"),
+                YceBundle.message("settings.yatagan.conditions.color.method"),
+                YceTextAttributeKeys.PathMemberMethod,
+            ),
+            AttributesDescriptor(
+                YceBundle.message("settings.yatagan.conditions.color.field"),
                 YceTextAttributeKeys.PathMemberMethod,
             ),
             AttributesDescriptor(
