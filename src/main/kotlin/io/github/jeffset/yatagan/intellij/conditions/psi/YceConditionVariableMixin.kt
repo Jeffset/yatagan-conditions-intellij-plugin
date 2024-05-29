@@ -54,22 +54,30 @@ abstract class YceConditionVariableMixin(node: ASTNode) : ASTWrapperPsiElement(n
 
         var currentClass: PsiClass? = psiClass
         return ResolvedConditionVariable(
-            path = members.map { member ->
+            path = members.mapIndexed { index, member ->
                 val resolvedOn = currentClass
                 val resolved = currentClass?.let { clazz ->
                     val name = member.text
-                    clazz.findMethodsByName(name, true).firstOrNull()?.let { method ->
+                    (clazz.findMethodsByName(name, true).let { methods ->
+                        // Try to resolve parameterless method first
+                        methods.firstOrNull {
+                            it.parameterList.isEmpty
+                        } ?: methods.firstOrNull()  // fallback to any method in order to display an error
+                    }?.let { method ->
                         currentClass = method.returnType?.accept(PsiTypeAsClass)
                         method
                     } ?: clazz.findFieldByName(name, true)?.let { field ->
                         currentClass = field.type.accept(PsiTypeAsClass)
                         field
+                    })?.takeIf {
+                        (index == 0) || !it.isStatic()
                     }
                 }
                 ResolvedMember(
                     element = member,
                     resolvedOn = resolvedOn,
                     resolvedMember = resolved,
+                    index = index,
                 )
             },
         )

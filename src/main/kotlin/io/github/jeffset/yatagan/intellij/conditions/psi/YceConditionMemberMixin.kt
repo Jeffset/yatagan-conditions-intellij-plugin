@@ -18,8 +18,10 @@ package io.github.jeffset.yatagan.intellij.conditions.psi
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiMember
+import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiReference
 import com.intellij.psi.PsiReferenceBase
 import com.intellij.psi.util.findParentOfType
@@ -35,14 +37,23 @@ abstract class YceConditionMemberMixin(node: ASTNode) : ASTWrapperPsiElement(nod
         element: YceConditionMember,
     ) : PsiReferenceBase<YceConditionMember>(element) {
         override fun getVariants(): Array<Any> {
-            val clazz = doResolve().resolvedOn ?: return emptyArray()
+            val resolved = doResolve()
+            val clazz = resolved.resolvedOn ?: return emptyArray()
+            val allowStatic = resolved.index == 0
             return buildList<PsiMember> {
-                addAll(clazz.allMethods)
+                addAll(clazz.allMethods.filter {
+                    it.parameterList.isEmpty
+                })
                 addAll(clazz.allFields)
             }.filter {
-                it.containingClass?.qualifiedName != "java.lang.Object"
-            }.distinctBy { it.name }
-                .toTypedArray()
+                val resultType = it.fieldOrMethodReturnType()
+                (resultType?.isBoolean(it) == true || resultType is PsiClassType) &&
+                        !it.hasModifierProperty(PsiModifier.PRIVATE) &&
+                        !it.hasModifierProperty(PsiModifier.PROTECTED) &&
+                        it.containingClass?.qualifiedName != "java.lang.Object" &&
+                        (allowStatic || !it.isStatic())
+
+            }.toTypedArray()
         }
 
         override fun resolve(): PsiElement? {

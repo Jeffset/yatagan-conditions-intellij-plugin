@@ -16,9 +16,15 @@
 
 package io.github.jeffset.yatagan.intellij.conditions.psi
 
+import com.intellij.psi.CommonClassNames
 import com.intellij.psi.PsiClass
 import com.intellij.psi.PsiClassType
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiField
+import com.intellij.psi.PsiMember
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifier
+import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiTypeVisitor
 import com.intellij.psi.util.PsiTreeUtil
@@ -42,4 +48,48 @@ internal fun UElement.enclosingSourcePsi(): PsiElement {
         current = current.uastParent
     }
     throw IllegalStateException("Unreached")
+}
+
+internal fun PsiType.isBoolean(context: PsiElement): Boolean {
+    return this == PsiType.BOOLEAN || run {
+        val boxed =  PsiClassType.getTypeByName(
+            CommonClassNames.JAVA_LANG_BOOLEAN, context.manager.project, context.resolveScope)
+        boxed == this
+    }
+}
+
+internal fun PsiModifierListOwner.isStatic(): Boolean = when {
+    hasModifierProperty(PsiModifier.STATIC) -> true
+    else -> false
+}
+
+internal fun PsiMember.fieldOrMethodReturnType(): PsiType? = when(this) {
+    is PsiMethod -> returnType
+    is PsiField -> type
+    else -> null
+}
+
+internal fun PsiClass.isKotlinObject(): Boolean {
+    // Can't use Kotlin classes here, so use the usual heuristics
+
+    if (getAnnotation("kotlin.Metadata") == null &&  // For binary classes
+        // For source "light" impls
+        !javaClass.canonicalName.startsWith("org.jetbrains.kotlin")) {
+        return false
+    }
+
+    val instance = findFieldByName("INSTANCE", /* checkBases = */ false)
+        ?: return false
+
+    if (!instance.hasModifierProperty(PsiModifier.STATIC) ||
+        !instance.hasModifierProperty(PsiModifier.PUBLIC) ||
+        !instance.hasModifierProperty(PsiModifier.FINAL)) {
+        return false
+    }
+
+    val isOfSameType = instance.type.accept(object : PsiTypeVisitor<Boolean>() {
+        override fun visitType(type: PsiType) = false
+        override fun visitClassType(classType: PsiClassType) = classType.resolve() == this@isKotlinObject
+    })
+    return isOfSameType
 }

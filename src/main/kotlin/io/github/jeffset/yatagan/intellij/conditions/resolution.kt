@@ -30,6 +30,7 @@ internal data class ResolvedMember(
     val element: YceConditionMember,
     val resolvedOn: PsiClass?,
     val resolvedMember: PsiMember?,
+    val index: Int,
 )
 
 internal fun YceConditionVariable.resolve(): ResolvedConditionVariable {

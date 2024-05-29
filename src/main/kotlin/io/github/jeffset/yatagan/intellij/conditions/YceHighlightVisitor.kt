@@ -24,6 +24,7 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifier
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionQualifier
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionVariable
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceExpression
@@ -32,6 +33,10 @@ import io.github.jeffset.yatagan.intellij.conditions.psi.YceFile
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceNotExpression
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceVariableExpression
 import io.github.jeffset.yatagan.intellij.conditions.psi.YceVisitor
+import io.github.jeffset.yatagan.intellij.conditions.psi.fieldOrMethodReturnType
+import io.github.jeffset.yatagan.intellij.conditions.psi.isBoolean
+import io.github.jeffset.yatagan.intellij.conditions.psi.isKotlinObject
+import io.github.jeffset.yatagan.intellij.conditions.psi.isStatic
 
 class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
     private var holder: HighlightInfoHolder? = null
@@ -51,23 +56,21 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
         action: Runnable,
     ): Boolean {
         try {
+            this.holder = holder
             // If the context can't be resolved, then no need to even try highlighting
             val context = (file as YceFile).context ?: run {
                 HighlightInfo.newHighlightInfo(HighlightInfoType.WARNING)
                     .descriptionAndTooltip(YceBundle.message("warning.yatagan.conditions.invalid.context"))
                     .range(file)
-                    .create()
-                    .let(holder::add)
+                    .createAndAdd()
                 return false
             }
-            this.holder = holder
 
             if (context.isLegacy && !validateForLegacyCondition(file.firstChild)) {
                 HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR)
                     .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.invalid.legacy"))
                     .range(file)
-                    .create()
-                    .let(holder()::add)
+                    .createAndAdd()
                 return true
             }
 
@@ -100,7 +103,7 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
             null -> HighlightInfo.newHighlightInfo(UNRESOLVED)
                 .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.qualifier", element.text))
             else -> HighlightInfo.newHighlightInfo(CONDITION_QUALIFIER)
-        }.range(element).create().let(holder()::add)
+        }.range(element).createAndAdd()
     }
 
     override fun visitFeatureReferenceVariable(element: YceFeatureReferenceVariable) {
@@ -108,11 +111,12 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
             null -> HighlightInfo.newHighlightInfo(UNRESOLVED)
                 .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.reference", element.text))
             else -> HighlightInfo.newHighlightInfo(FEATURE_REFERENCE)
-        }.range(element).create().let(holder()::add)
+        }.range(element).createAndAdd()
     }
 
     override fun visitConditionVariable(element: YceConditionVariable) {
-        for ((member, _, resolvedMember) in element.resolve().path) {
+        val resolvedMembers = element.resolve().path
+        for ((member, resolvedOn, resolvedMember, index) in resolvedMembers) {
             if (resolvedMember != null) {
                 if (resolvedMember is PsiMethod) {
                     HighlightInfo.newHighlightInfo(METHOD_MEMBER)
@@ -122,11 +126,39 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
             } else {
                 HighlightInfo.newHighlightInfo(UNRESOLVED)
                     .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.unresolved.member", member.text))
-            }.range(member).create().let(holder()::add)
+            }.range(member).createAndAdd()
+
+            val resultType = resolvedMember?.fieldOrMethodReturnType()
+            if (index == 0 && resolvedMember?.isStatic() == false && resolvedOn?.isKotlinObject() == true) {
+                HighlightInfo.newHighlightInfo(HighlightInfoType.WARNING)
+                    .descriptionAndTooltip(YceBundle.message("warning.yatagan.conditions.injecting.object",
+                        resolvedOn.qualifiedName.orEmpty()))
+                    .range(element.conditionQualifier ?: member).createAndAdd()
+            }
+            if (index == resolvedMembers.lastIndex && (resultType?.isBoolean(resolvedMember) == false)) {
+                HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR)
+                    .descriptionAndTooltip(YceBundle.message("error.yatagan.conditions.invalid.boolean",
+                        member.text, resultType.canonicalText))
+                    .range(member).createAndAdd()
+            }
+            if (resolvedMember?.hasModifierProperty(PsiModifier.PUBLIC) == false) {
+                HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR)
+                    .descriptionAndTooltip(
+                        YceBundle.message("error.yatagan.conditions.invalid.inaccessible", member.text))
+                    .range(member).createAndAdd()
+            }
+            if (resolvedMember is PsiMethod && !resolvedMember.parameterList.isEmpty) {
+                HighlightInfo.newHighlightInfo(HighlightInfoType.ERROR)
+                    .descriptionAndTooltip(
+                        YceBundle.message("error.yatagan.conditions.invalid.parameters", member.text))
+                    .range(member).createAndAdd()
+            }
         }
     }
 
-    private fun holder() = checkNotNull(holder)
+    private fun HighlightInfo.Builder.createAndAdd() {
+        create().let(checkNotNull(holder)::add)
+    }
 
     private fun YceExpression.unwrapNot(): YceExpression? = when(this) {
         is YceNotExpression -> expression
