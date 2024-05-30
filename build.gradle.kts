@@ -70,6 +70,14 @@ tasks {
                 .joinToString("\n")
                 .let(::markdownToHTML)
         }
+
+        changeNotes = """
+            * Implemented more precise completion and condition resolution
+            * Fixed a bug in color scheme settings that prevented users from setting method color
+            * Added more precise error and warning reporting
+
+            **Full Changelog**: https://github.com/Jeffset/yatagan-conditions-intellij-plugin/compare/v0.1.1-alpha...v0.2.0
+        """.trimIndent().let(::markdownToHTML)
     }
 
     signPlugin {

@@ -9,7 +9,7 @@ An unofficial plugin providing IDE support for [Yatagan](https://github.com/yand
 # Functionality
 - Syntax highlighting for values inside `@ConditionExpression` and legacy `@Condition` annotations.
 - Correct usage tracking and rename refactorings with referenced _features_ and _conditions_.
-- Naive autocomplete for _condition_ path members.
+- Autocomplete for _condition_ path members.
 
 # What is not here
 There is no building and validating yatagan graphs functionality
