@@ -80,6 +80,7 @@ abstract class YceConditionVariableMixin(node: ASTNode) : ASTWrapperPsiElement(n
                     index = index,
                 )
             },
+            context = context,
         )
     }
 

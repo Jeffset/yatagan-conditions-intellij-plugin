@@ -24,7 +24,7 @@ import com.yandex.yatagan.ConditionExpression;
 
 @ConditionExpression(value = "<error descr="Unresolved feature reference: `@Feature`.">@Feature</error> & " +
         "<error descr="Unresolved qualifier: `Goo`.">Goo</error>::<error descr="Unresolved method/field: `isEnabled`.">isEnabled</error> | " +
-        "Hello::sIsEnabled.<error descr="Unresolved method/field: `nothing`.">nothing</error>",
+        "<warning descr="Condition Provider qualifier is redundant with a single import.">Hello</warning>::sIsEnabled.<error descr="Unresolved method/field: `nothing`.">nothing</error>",
         imports = {Hello.class})
 @interface WithUnresolvedThings {}
 
