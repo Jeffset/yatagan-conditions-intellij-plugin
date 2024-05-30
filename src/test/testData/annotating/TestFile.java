@@ -28,10 +28,26 @@ import com.yandex.yatagan.ConditionExpression;
         imports = {Hello.class})
 @interface WithUnresolvedThings {}
 
+@ConditionExpression(value = "Hello::<error descr="The end of the condition access path `sByte` does not evaluate to boolean. Got `byte` instead.">sByte</error> | " +
+        "Foo::bar.<error descr="The end of the condition access path `getByte` does not evaluate to boolean. Got `byte` instead."><error descr="The method/field should be public (or internal): `getByte`.">getByte</error></error> & " +
+        "Foo::bar.<error descr="The end of the condition access path `bbb` does not evaluate to boolean. Got `java.lang.String` instead.">bbb</error>",
+        imports = {Hello.class, Foo.class})
+@interface WithNonBoolean {}
+
+class Foo {
+    public static final Bar bar = new Bar();
+}
+
+class Bar {
+    public String bbb = "";
+    byte getByte() { return 0; }
+}
+
 class Hello {
     // language="YataganConditionExpression"
     static final String DANGLING_EXPRESSION = "<warning descr="Unable to find an enclosing Yatagan annotation (@Condition/@ConditionExpression). This language is only supported while injected into such an annotation, no semantic highlighting is currently possible.">!Hello::foo | @Foo</warning>";
 
-    static boolean sIsEnabled = false;
-    static boolean sIsEnabledB = false;
+    public static boolean sIsEnabled = false;
+    public static boolean sIsEnabledB = false;
+    public static byte sByte = 0;
 }

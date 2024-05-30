@@ -36,9 +36,12 @@ class CompletionTest : LightJavaCodeInsightFixtureTestCase4(
                 @interface TestAnnotation {}
                 
                 class Hello {
+                    static void hello() { }
                     static boolean sIsEnabled = false;
                     static boolean sFooBar = false;
+                    static int sInt = 0;
                     static boolean sHooBar = false;
+                    static long getLong() { return 0L; }
                 }
             """.trimIndent()
         )
