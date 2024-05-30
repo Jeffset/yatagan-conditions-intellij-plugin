@@ -115,7 +115,17 @@ class YceHighlightVisitor : HighlightVisitor, YceVisitor<Unit>() {
     }
 
     override fun visitConditionVariable(element: YceConditionVariable) {
-        val resolvedMembers = element.resolve().path
+        val (resolvedMembers, context: YceContext?) = element.resolve()
+
+        element.conditionQualifier?.let { qualifier ->
+            if (context?.imports?.size == 1) {
+                HighlightInfo.newHighlightInfo(HighlightInfoType.UNUSED_SYMBOL)
+                    .descriptionAndTooltip(
+                        YceBundle.message("warning.yatagan.conditions.redundant.qualifier"))
+                    .range(qualifier).createAndAdd()
+            }
+        }
+
         for ((member, resolvedOn, resolvedMember, index) in resolvedMembers) {
             if (resolvedMember != null) {
                 if (resolvedMember is PsiMethod) {

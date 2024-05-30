@@ -24,6 +24,7 @@ import io.github.jeffset.yatagan.intellij.conditions.psi.YceConditionVariableMix
 
 internal data class ResolvedConditionVariable(
     val path: List<ResolvedMember>,
+    val context: YceContext?,
 )
 
 internal data class ResolvedMember(
