@@ -59,10 +59,14 @@ class YceFile(
 
     internal val cachedContext: CachedValue<YceContext?> = CachedValuesManager.getManager(project).createCachedValue {
         val manager = InjectedLanguageManager.getInstance(viewProvider.manager.project)
-        val hostPsi = manager.getInjectionHost(viewProvider)
-        val dependencies = ArrayList<Any>(2)
-        val context = tryResolveContext(hostPsi, dependencies)
-        Result.create(context, *dependencies.toArray())
+        when(val hostPsi = manager.getInjectionHost(viewProvider) ?: manager.getInjectionHost(this)) {
+            null -> Result.create(null, PsiModificationTracker.MODIFICATION_COUNT)
+            else -> {
+                val dependencies = ArrayList<Any>(2)
+                val context = tryResolveContext(hostPsi, dependencies)
+                Result.create(context, *dependencies.toArray())
+            }
+        }
     }
 
     internal val context: YceContext?
