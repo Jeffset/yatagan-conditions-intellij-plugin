@@ -28,5 +28,5 @@ and search for the _Yatagan Conditions_ plugin, then click **Install**.
 
 [ci-svg]: https://github.com/Jeffset/yatagan-conditions-intellij-plugin/actions/workflows/ci.yml/badge.svg
 [ci-workflow]: https://github.com/Jeffset/yatagan-conditions-intellij-plugin/actions/workflows/ci.yml
-[plugin-repo]: https://plugins.jetbrains.com/plugin/24330-yatagan-conditions
+[plugin-repo]: https://plugins.jetbrains.com/plugin/24546-yatagan-conditions
 [plugin-version-svg]: https://img.shields.io/jetbrains/plugin/v/24546-yatagan-conditions.svg
