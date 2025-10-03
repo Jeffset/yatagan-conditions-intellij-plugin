@@ -27,6 +27,7 @@ import com.intellij.psi.PsiModifier
 import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.PsiType
 import com.intellij.psi.PsiTypeVisitor
+import com.intellij.psi.PsiTypes
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.uast.UElement
 
@@ -51,7 +52,7 @@ internal fun UElement.enclosingSourcePsi(): PsiElement {
 }
 
 internal fun PsiType.isBoolean(context: PsiElement): Boolean {
-    return this == PsiType.BOOLEAN || run {
+    return this == PsiTypes.booleanType() || run {
         val boxed =  PsiClassType.getTypeByName(
             CommonClassNames.JAVA_LANG_BOOLEAN, context.manager.project, context.resolveScope)
         boxed == this
