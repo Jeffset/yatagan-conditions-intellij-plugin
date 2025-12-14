@@ -1,11 +1,14 @@
 .gradle
+.kotlin
 build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 .idea/**
+.intellijPlatform
 *.iws
 *.iml
 *.ipr
 
 local.properties
+.DS_Store

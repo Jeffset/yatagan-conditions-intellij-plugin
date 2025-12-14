@@ -1,4 +1,5 @@
 import org.jetbrains.changelog.markdownToHTML
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.util.Properties
 
@@ -15,6 +16,9 @@ version = properties("plugin.version").get()
 
 repositories {
     mavenCentral()
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 kotlin {
@@ -29,40 +33,38 @@ java {
     }
 }
 
-intellij {
-    pluginName = properties("plugin.name")
-    version = properties("plugin.build.platformVersion")
-    type = properties("plugin.build.platformType")
+dependencies {
+    testImplementation(libs.junit)
 
-    plugins = listOf(
-        "org.intellij.intelliLang",
-        "com.intellij.java",
+    intellijPlatform {
+        create(properties("plugin.build.platformType").get(), properties("plugin.build.platformVersion").get())
 
-        // Just for testing, no real dependency
-        "org.jetbrains.kotlin",
-    )
+        bundledPlugins(
+            "org.intellij.intelliLang",
+            "com.intellij.java",
 
-    instrumentCode = false
+            // Just for testing, no real dependency
+            "org.jetbrains.kotlin"
+        )
+
+        pluginVerifier()
+
+        testFramework(TestFrameworkType.Bundled)
+    }
 }
 
-val sourceMain = layout.projectDirectory.dir("src").dir("main")
-val generatedPsiDir = layout.buildDirectory.dir("generated-java")
-
-sourceSets.main {
-    java.srcDirs(generatedPsiDir)
-}
-
-val localProperties: Provider<Properties> = providers.fileContents(layout.projectDirectory.file("local.properties"))
-    .asText.map { text -> text.reader().use { Properties().apply { load(it) } } }
-
-tasks {
-    patchPluginXml {
+intellijPlatform {
+    pluginConfiguration {
+        id = properties("plugin.id")
+        name = properties("plugin.name")
         version = properties("plugin.version")
-        sinceBuild = properties("plugin.sinceBuild")
-        untilBuild = properties("plugin.untilBuild")
-        pluginId = properties("plugin.id")
 
-        pluginDescription = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map { readme ->
+        ideaVersion {
+            sinceBuild = properties("plugin.sinceBuild")
+            untilBuild = properties("plugin.untilBuild")
+        }
+
+        description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map { readme ->
             // Take plugin description from README.md
             readme.lineSequence()
                 .dropWhile { it.trim() != "<!-- PLUGIN DESCRIPTION -->" }.drop(1)
@@ -80,16 +82,34 @@ tasks {
         """.trimIndent().let(::markdownToHTML)
     }
 
-    signPlugin {
+    pluginVerification {
+        ides {
+            recommended()
+        }
+    }
+
+    signing {
         certificateChain = environment("SIGN_PLUGIN_CERTIFICATE_CHAIN")
         privateKey = environment("SIGN_PLUGIN_PRIVATE_KEY")
         password = environment("SIGN_PLUGIN_PRIVATE_KEY_PASSWORD")
     }
 
-    publishPlugin {
+    publishing {
         token = environment("PLUGIN_PUBLISH_TOKEN")
     }
+}
 
+val sourceMain = layout.projectDirectory.dir("src").dir("main")
+val generatedPsiDir = layout.buildDirectory.dir("generated-java")
+
+sourceSets.main {
+    java.srcDirs(generatedPsiDir)
+}
+
+val localProperties: Provider<Properties> = providers.fileContents(layout.projectDirectory.file("local.properties"))
+    .asText.map { text -> text.reader().use { Properties().apply { load(it) } } }
+
+tasks {
     val packagePath = "io/github/jeffset/yatagan/intellij/conditions"
     generateParser {
         sourceFile = sourceMain.file("Yce.bnf")
@@ -112,11 +132,6 @@ tasks {
         dependsOn(generateParser, generateLexer)
     }
 
-    setupDependencies {
-        // Hooked up to IntelliJ "After Gradle Sync".
-        dependsOn(preBuild)
-    }
-
     withType<KotlinCompile> {
         dependsOn(preBuild)
     }
@@ -125,6 +140,8 @@ tasks {
         val intellijDir = environment("INTELLIJ_SOURCES_DIR").getOrNull() ?: localProperties("intellij.dir").getOrNull()
         intellijDir?.let {
             systemProperty("idea.home.path", it)
+            // Avoid Kotlin plugin treating tests as "running from sources" (it tries to download Kotlin dist otherwise)
+            systemProperty("idea.use.dev.build.server", "true")
         }
 
         doFirst {

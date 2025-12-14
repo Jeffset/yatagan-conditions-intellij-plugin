@@ -11,10 +11,11 @@ private const val BUNDLE = "messages.YceBundle"
 internal object YceBundle {
     private val instance = DynamicBundle(YceBundle::class.java, BUNDLE)
 
+    @Nls
     fun message(
-        key: @PropertyKey(resourceBundle = BUNDLE) String,
+        @PropertyKey(resourceBundle = BUNDLE) key: String,
         vararg params: Any
-    ): @Nls String {
+    ): String {
         return instance.getMessage(key, *params)
     }
 }

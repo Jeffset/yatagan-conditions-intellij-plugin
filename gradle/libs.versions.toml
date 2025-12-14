@@ -1,8 +1,12 @@
 [versions]
-kotlin = "1.9.23"
+kotlin = "2.2.21"
+junit = "4.13.2"
+
+[libraries]
+junit = { module = "junit:junit", version.ref = "junit" }
 
 [plugins]
 kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-intelliJPlugin = { id = "org.jetbrains.intellij", version = "1.17.3" }
-grammarKit = { id = "org.jetbrains.grammarkit", version = "2022.3.2.2" }
-changelog = { id = "org.jetbrains.changelog", version = "2.2.0" }
+intelliJPlugin = { id = "org.jetbrains.intellij.platform", version = "2.10.5" }
+grammarKit = { id = "org.jetbrains.grammarkit", version = "2023.3.0.1" }
+changelog = { id = "org.jetbrains.changelog", version = "2.5.0" }

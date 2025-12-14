@@ -51,7 +51,7 @@ jobs:
           INTELLIJ_SOURCES_DIR: ${{ github.workspace }}/intellij-sources
 
       - name: Verify Compatibility
-        run: ./gradlew runPluginVerifier --continue --stacktrace
+        run: ./gradlew verifyPlugin --continue --stacktrace
         env:
           INTELLIJ_SOURCES_DIR: ${{ github.workspace }}/intellij-sources
 
