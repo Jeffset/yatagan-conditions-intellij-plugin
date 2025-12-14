@@ -61,7 +61,7 @@ intellijPlatform {
 
         ideaVersion {
             sinceBuild = properties("plugin.sinceBuild")
-            untilBuild = properties("plugin.untilBuild")
+            untilBuild = provider { null }
         }
 
         description = providers.fileContents(layout.projectDirectory.file("README.md")).asText.map { readme ->
